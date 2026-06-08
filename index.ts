@@ -1,28 +1,39 @@
-import { text, isCancel, intro, outro } from "@clack/prompts";
+import { text, isCancel, intro, outro, note } from "@clack/prompts";
+import { color } from "./config";
+import findLookAlikeCompanies from "./services/ocean";
+
+function handleCancel(value: unknown) {
+    if (isCancel(value)) {
+        console.log("Operation Cancelled");
+        process.exit(0);
+    }
+}
 
 async function main() {
-    intro("Cold Mail Outreaech")
-    const name = await text({
-        message: "What is your name (for outreach purposes)?",
-        placeholder: "John Doe", 
+    console.clear()
+    intro(color.bgCyanBright.black`  Cold Mail Outreach  `)
+    const senderName = await text({
+        message: `Your Name ${color.muted`(used in outreach emails)`}`,
+        placeholder: "John Doe",
+        validate: (v) => (!v?.trim() ? "Name is required" : undefined)
     }) as string;
-
-    if (isCancel(name)){
-        console.log("Operation Cancelled");
-        process.exit(0)
-    }
+    handleCancel(senderName)
 
     const seed_domain = await text({
-        message: "Seed Domain: ", 
-        placeholder: "@company.org"
+        message: "Seed Domain ",
+        placeholder: "company.org",
+        validate: (v) => {
+            if (!v?.trim()) return "Domain is required"
+            if (!/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v.trim())) return "Enter a valid domain e.g., @subspace.org"
+        }
     }) as string
-    
-    if (isCancel(seed_domain)){
-        console.log("Operation Cancelled");
-        process.exit(0)
-    }
+    handleCancel(seed_domain)
 
-    outro("Done ")
+
+    const lookalikeDomains = await findLookAlikeCompanies(seed_domain)
+    
+
+    outro(color.bgGreenBright.black` Done `)
 }
 
 main().catch(console.error)
