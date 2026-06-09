@@ -8,7 +8,7 @@ const findPersonLinkedinUrls = async (domains: string[]): Promise<string[]> => {
 
     try {
         for (const domain of domains) {
-            s.message(`Getting decision-makers for ${color.cyan(domains)}...`);
+            s.message(`Getting decision-makers for ${color.cyan(domain)}...`);
             const response = await fetch("https://pro.searchleads.co/functions/v1/people-search", {
                 method: "POST",
                 headers: {
@@ -40,7 +40,7 @@ const findPersonLinkedinUrls = async (domains: string[]): Promise<string[]> => {
         }
 
 
-        s.stop(color.green(`✓ Found ${allLinkedinUrls.length} prospects across ${domains.length} companies`));
+        s.stop(color.green(`✓ Found ${allLinkedinUrls.length} prospects from the companies`));
 
         return allLinkedinUrls
     } catch (e) {
